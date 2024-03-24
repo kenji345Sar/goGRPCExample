@@ -38,8 +38,23 @@ type Sample struct {
 
 func (s *Sample) GetData(
 	ctx context.Context,
-	message *grpc_sample.Message,
-) (*grpc_sample.Message, error) {
-	log.Print(message.Body)
-	return &grpc_sample.Message{Body: "レスポンスデータ"}, nil
+	req *grpc_sample.GetDataRequest, // リクエストの型を更新します。
+) (*grpc_sample.GetDataResponse, error) { // レスポンスの型を更新します。
+	log.Print("Received num_type: ", req.NumType)
+
+	// ここでuser_datasとnum_maxを設定します。
+	userDatas := []*grpc_sample.UserData{
+		// ここにユーザーデータを追加します。
+		{UserId: "1", UserName: "ユーザー1"},
+		{UserId: "2", UserName: "ユーザー2"},
+		// ...
+	}
+	numMax := int32(len(userDatas)) // 例として、userDatasの長さをnum_maxとしています。
+
+	// レスポンスを作成して返します。
+	response := &grpc_sample.GetDataResponse{
+		UserDatas: userDatas,
+		NumMax:    numMax,
+	}
+	return response, nil
 }

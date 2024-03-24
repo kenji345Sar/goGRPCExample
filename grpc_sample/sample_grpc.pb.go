@@ -22,7 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SampleServiceClient interface {
-	GetData(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	// リクエストとレスポンスメッセージの型を更新します。
+	GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error)
 }
 
 type sampleServiceClient struct {
@@ -33,8 +34,8 @@ func NewSampleServiceClient(cc grpc.ClientConnInterface) SampleServiceClient {
 	return &sampleServiceClient{cc}
 }
 
-func (c *sampleServiceClient) GetData(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
-	out := new(Message)
+func (c *sampleServiceClient) GetData(ctx context.Context, in *GetDataRequest, opts ...grpc.CallOption) (*GetDataResponse, error) {
+	out := new(GetDataResponse)
 	err := c.cc.Invoke(ctx, "/sample.SampleService/GetData", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -46,14 +47,15 @@ func (c *sampleServiceClient) GetData(ctx context.Context, in *Message, opts ...
 // All implementations should embed UnimplementedSampleServiceServer
 // for forward compatibility
 type SampleServiceServer interface {
-	GetData(context.Context, *Message) (*Message, error)
+	// リクエストとレスポンスメッセージの型を更新します。
+	GetData(context.Context, *GetDataRequest) (*GetDataResponse, error)
 }
 
 // UnimplementedSampleServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedSampleServiceServer struct {
 }
 
-func (UnimplementedSampleServiceServer) GetData(context.Context, *Message) (*Message, error) {
+func (UnimplementedSampleServiceServer) GetData(context.Context, *GetDataRequest) (*GetDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
 }
 
@@ -69,7 +71,7 @@ func RegisterSampleServiceServer(s grpc.ServiceRegistrar, srv SampleServiceServe
 }
 
 func _SampleService_GetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Message)
+	in := new(GetDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -81,7 +83,7 @@ func _SampleService_GetData_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/sample.SampleService/GetData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SampleServiceServer).GetData(ctx, req.(*Message))
+		return srv.(SampleServiceServer).GetData(ctx, req.(*GetDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

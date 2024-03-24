@@ -3,10 +3,24 @@ package sample;
 
 option go_package = "../grpc_sample";
 
-message Message {
-  string body = 1;
+// リクエストメッセージに新しいフィールドを追加します。
+message GetDataRequest {
+  string num_type = 1;
+}
+
+// ユーザーデータ型を定義します。
+message UserData {
+  string user_id = 1;
+  string user_name = 2;
+}
+
+// レスポンスメッセージに新しいフィールドを追加します。
+message GetDataResponse {
+  repeated UserData user_datas = 1;
+  int32 num_max = 2;
 }
 
 service SampleService {
-  rpc GetData(Message) returns (Message) {}
+  // リクエストとレスポンスメッセージの型を更新します。
+  rpc GetData(GetDataRequest) returns (GetDataResponse) {}
 }
